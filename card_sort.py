@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import json
+import warnings
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -9,6 +10,11 @@ from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
 load_dotenv()
+
+# This suppresses only the specific Pydantic serializer warning while keeping all other warnings visible. 
+# The warning itself is a known LangChain issue — the parsed result is being used correctly, 
+# Pydantic just complains because the AIMessage.parsed field's type annotation doesn't expect a value.
+warnings.filterwarnings("ignore", message="Pydantic serializer warnings")
 
 NUM_AGENTS = 20
 
