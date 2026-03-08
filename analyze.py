@@ -217,8 +217,15 @@ def build_figure(
         row=2, col=1,
     )
 
-    # Hide dendrogram axes ticks
-    fig.update_xaxes(showticklabels=False, row=1, col=1)
+    # Show labels on dendrogram x-axis
+    fig.update_xaxes(
+        tickvals=dendro_x,
+        ticktext=short_labels,
+        tickangle=90,
+        tickfont=dict(size=9),
+        side="top",
+        row=1, col=1,
+    )
     fig.update_yaxes(title_text="Distance", row=1, col=1)
 
     fig.update_layout(
@@ -236,11 +243,16 @@ def build_cluster_table_html(
     canonical_labels: list[str],
     Z: np.ndarray,
     threshold: float = 0.5,
+    n_clusters: int | None = None,
 ) -> str:
-    """Generate an HTML table of clusters cut at the given similarity threshold."""
-    # fcluster uses distance threshold, so convert
-    distance_threshold = 1 - threshold
-    clusters = fcluster(Z, t=distance_threshold, criterion="distance")
+    """Generate an HTML table of clusters cut at the given similarity threshold or k."""
+    if n_clusters is not None:
+        clusters = fcluster(Z, t=n_clusters, criterion="maxclust")
+        subtitle = f"Cut into {n_clusters} clusters"
+    else:
+        distance_threshold = 1 - threshold
+        clusters = fcluster(Z, t=distance_threshold, criterion="distance")
+        subtitle = f"Similarity threshold: {threshold}"
 
     # Group labels by cluster
     cluster_groups: dict[int, list[str]] = {}
@@ -263,9 +275,8 @@ def build_cluster_table_html(
 
     return f"""
     <div style="max-width:900px;margin:40px auto;font-family:system-ui,sans-serif;">
-        <h2>Cluster Groups (similarity threshold: {threshold})</h2>
-        <p style="color:#666;">Labels that were grouped together by at least
-        {int(threshold * 100)}% of participants.</p>
+        <h2>Cluster Groups ({subtitle})</h2>
+        <p style="color:#666;">{len(sorted_clusters)} clusters identified.</p>
         <table style="border-collapse:collapse;width:100%;">
             <thead><tr style="border-bottom:2px solid #333;">
                 <th style="text-align:left;padding:8px;width:140px;">Cluster</th>
@@ -322,13 +333,17 @@ def parse_args() -> argparse.Namespace:
         help="Output HTML file (default: output/analysis.html)",
     )
     parser.add_argument(
-        "--linkage", type=str, default="average",
+        "--linkage", type=str, default="ward",
         choices=["average", "complete", "single", "ward"],
         help="Linkage method for HCA (default: average)",
     )
     parser.add_argument(
         "--threshold", type=float, default=0.5,
         help="Similarity threshold for cluster cutting (default: 0.5)",
+    )
+    parser.add_argument(
+        "-k", "--clusters", type=int, default=None,
+        help="Number of clusters to cut the dendrogram into (overrides --threshold)",
     )
     parser.add_argument(
         "--no-open", action="store_true",
@@ -352,7 +367,9 @@ def main():
 
     print("Building visualizations...")
     fig = build_figure(canonical_labels, similarity, Z, dendro)
-    cluster_html = build_cluster_table_html(canonical_labels, Z, threshold=args.threshold)
+    cluster_html = build_cluster_table_html(
+        canonical_labels, Z, threshold=args.threshold, n_clusters=args.clusters,
+    )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     save_html(fig, cluster_html, output_path)
