@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SortForm from '../components/SortForm.tsx';
+---
+
+<Layout title="Run Card Sort">
+  <h1 style="margin-bottom: 0.5rem;">Run a Card Sort</h1>
+  <p style="color: #666; margin-bottom: 2rem;">Enter your labels below (one per line or comma-separated). 20 AI agents will sort them into groups.</p>
+  <SortForm client:load />
+</Layout>
