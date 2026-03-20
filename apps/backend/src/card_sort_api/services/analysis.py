@@ -202,7 +202,7 @@ def build_heatmap_figure(
             z=reordered_sim.tolist(),
             x=dendro_x,
             y=dendro_x,
-            colorscale=[[0, "#f2b5b5"], [1, "#1a5276"]],
+            colorscale="Blues",
             zmin=0,
             zmax=1,
             text=hover_text,

@@ -174,7 +174,7 @@ export default function AnalyzeForm() {
       {result && (
         <>
           <div style={styles.chartContainer}>
-            <PlotlyChart figure={result.dendrogram} style={{ width: '100%', minHeight: '400px' }} />
+            <PlotlyChart figure={result.dendrogram} style={{ width: '100%', minHeight: '800px' }} />
           </div>
           <div style={styles.chartContainer}>
             <PlotlyChart figure={result.heatmap} style={{ width: '100%', minHeight: '700px' }} />

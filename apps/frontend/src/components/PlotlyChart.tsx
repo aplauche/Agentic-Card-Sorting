@@ -16,6 +16,7 @@ export default function PlotlyChart({ figure, style }: PlotlyChartProps) {
         Plotly.react(containerRef.current, figure.data, {
           ...figure.layout,
           autosize: true,
+          height: Math.max(800, figure.layout?.height ?? 0),
         }, {
           responsive: true,
           displayModeBar: true,
@@ -38,7 +39,7 @@ export default function PlotlyChart({ figure, style }: PlotlyChartProps) {
   return (
     <div
       ref={containerRef}
-      style={style ?? { width: '100%', minHeight: '400px' }}
+      style={style ?? { width: '100%', minHeight: '800px' }}
     />
   );
 }

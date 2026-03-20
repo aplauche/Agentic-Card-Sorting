@@ -1,5 +1,6 @@
 import asyncio
 import json
+import random
 import warnings
 from typing import AsyncGenerator
 
@@ -42,13 +43,15 @@ def build_system_prompt(agent_id: int) -> str:
         f"You are participant #{agent_id + 1} in a card sorting study. "
         f"You are {persona}.\n\n"
         "You will be given a set of labels (like navigation items, features, or content topics). "
-        "Your task is to sort ALL of the labels into groups that make logical sense to you.\n\n"
+        "Your task is to sort ALL of the labels into groups of similar items that make logical sense to you.\n\n"
         "Rules:\n"
-        "- Create as many or as few groups as you think are appropriate\n"
-        "- Give each group a short, descriptive name\n"
+        "- Create as many or as few groups as you think are appropriate to keep the most similar items together\n"
+        "- Put at least 3 labels together in each bin you create them\n"
         "- Every label must be placed in exactly one group — do not leave any out\n"
         "- Do not rename or modify the labels — use them exactly as provided\n"
-        "- Group them based on how YOU would naturally organize them\n"
+        "- Group them based on how YOU would naturally organize them - think about semantic meaning\n"
+        "- ONLY AFTER all labels are sorted should you give each group a short, descriptive name\n"
+
     )
 
 
@@ -70,7 +73,7 @@ async def run_agent(agent_id: int, labels: list[str], llm) -> dict:
 
 async def run_agents_streaming(labels: list[str]) -> AsyncGenerator[dict, None]:
     """Launch all agents and yield each result as it completes."""
-    llm = ChatOpenAI(model="gpt-4.1-mini", temperature=0.7)
+    llm = ChatOpenAI(model="gpt-5.4", temperature=random.uniform(0.65, 0.95))
 
     tasks = {
         asyncio.ensure_future(run_agent(i, labels, llm)): i
