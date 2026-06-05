@@ -26,6 +26,11 @@ const styles = {
     fontWeight: 600,
     color: '#444',
   } as React.CSSProperties,
+  hint: {
+    fontSize: '0.85rem',
+    color: '#666',
+    margin: '0 0 1rem',
+  } as React.CSSProperties,
   input: {
     padding: '0.6rem 0.8rem',
     border: '1px solid #ddd',
@@ -69,11 +74,12 @@ const styles = {
   } as React.CSSProperties,
 };
 
-interface AnalysisResult {
+interface MatrixResult {
   dendrogram: { data: any[]; layout: any };
   heatmap: { data: any[]; layout: any };
-  clusters: Array<{ cluster_id: number; labels: string[]; size: number }>;
 }
+
+type Cluster = { cluster_id: number; labels: string[]; size: number };
 
 interface AnalysisPanelProps {
   /** A File (standalone upload) or the in-memory sort summary object. */
@@ -81,32 +87,65 @@ interface AnalysisPanelProps {
 }
 
 export default function AnalysisPanel({ source }: AnalysisPanelProps) {
-  const [k, setK] = useState(8);
   const [linkage, setLinkage] = useState('ward');
-  const [loading, setLoading] = useState(false);
+  const [k, setK] = useState(8);
+  const [matrix, setMatrix] = useState<MatrixResult | null>(null);
+  const [clusters, setClusters] = useState<Cluster[] | null>(null);
+  const [matrixLoading, setMatrixLoading] = useState(false);
+  const [clusterLoading, setClusterLoading] = useState(false);
   const [error, setError] = useState('');
-  const [result, setResult] = useState<AnalysisResult | null>(null);
 
-  const runAnalysis = useCallback(async () => {
+  const sourceAsFile = useCallback((): File => {
+    if (source instanceof File) return source;
+    return new File([JSON.stringify(source)], 'summary.json', {
+      type: 'application/json',
+    });
+  }, [source]);
+
+  const computeMatrix = useCallback(async () => {
     if (!source) return;
 
-    setLoading(true);
+    setMatrixLoading(true);
     setError('');
 
     try {
-      const file =
-        source instanceof File
-          ? source
-          : new File([JSON.stringify(source)], 'summary.json', {
-              type: 'application/json',
-            });
-
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', sourceAsFile());
+      formData.append('linkage', linkage);
+
+      const response = await fetch('/api/matrix', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Server error: ${response.status} - ${text}`);
+      }
+
+      setMatrix(await response.json());
+      // The linkage may have changed, so any prior clusters are now stale.
+      setClusters(null);
+    } catch (e: any) {
+      setError(e.message || 'An error occurred');
+    } finally {
+      setMatrixLoading(false);
+    }
+  }, [source, linkage, sourceAsFile]);
+
+  const computeClusters = useCallback(async () => {
+    if (!source) return;
+
+    setClusterLoading(true);
+    setError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('file', sourceAsFile());
       formData.append('k', k.toString());
       formData.append('linkage', linkage);
 
-      const response = await fetch('/api/analyze', {
+      const response = await fetch('/api/clusters', {
         method: 'POST',
         body: formData,
       });
@@ -117,29 +156,23 @@ export default function AnalysisPanel({ source }: AnalysisPanelProps) {
       }
 
       const data = await response.json();
-      setResult(data);
+      setClusters(data.clusters);
     } catch (e: any) {
       setError(e.message || 'An error occurred');
     } finally {
-      setLoading(false);
+      setClusterLoading(false);
     }
-  }, [source, k, linkage]);
+  }, [source, k, linkage, sourceAsFile]);
 
   return (
     <>
+      {/* Step 1: similarity matrix */}
       <div style={styles.form}>
+        <p style={styles.hint}>
+          Build the similarity matrix first to see how many clusters naturally emerge,
+          then choose a value for k below.
+        </p>
         <div style={styles.row}>
-          <div style={styles.field}>
-            <label style={styles.label}>Clusters (k)</label>
-            <input
-              type="number"
-              min={2}
-              max={50}
-              value={k}
-              onChange={e => setK(parseInt(e.target.value) || 8)}
-              style={{ ...styles.input, width: '80px' }}
-            />
-          </div>
           <div style={styles.field}>
             <label style={styles.label}>Linkage</label>
             <select
@@ -154,25 +187,61 @@ export default function AnalysisPanel({ source }: AnalysisPanelProps) {
             </select>
           </div>
           <button
-            style={{ ...styles.button, ...(loading || !source ? styles.buttonDisabled : {}) }}
-            onClick={runAnalysis}
-            disabled={loading || !source}
+            style={{ ...styles.button, ...(matrixLoading || !source ? styles.buttonDisabled : {}) }}
+            onClick={computeMatrix}
+            disabled={matrixLoading || !source}
           >
-            {loading ? 'Analyzing...' : result ? 'Re-run' : 'Analyze'}
+            {matrixLoading
+              ? 'Building...'
+              : matrix
+              ? 'Rebuild matrix'
+              : 'Build similarity matrix'}
           </button>
         </div>
         {error && <div style={styles.error}>{error}</div>}
       </div>
 
-      {result && (
+      {matrix && (
         <>
           <div style={styles.chartContainer}>
-            <PlotlyChart figure={result.dendrogram} style={{ width: '100%', minHeight: '800px' }} />
+            <PlotlyChart figure={matrix.heatmap} style={{ width: '100%', minHeight: '700px' }} />
           </div>
           <div style={styles.chartContainer}>
-            <PlotlyChart figure={result.heatmap} style={{ width: '100%', minHeight: '700px' }} />
+            <PlotlyChart figure={matrix.dendrogram} style={{ width: '100%', minHeight: '800px' }} />
           </div>
-          <ClusterTable clusters={result.clusters} />
+
+          {/* Step 2: extract clusters at a chosen k */}
+          <div style={styles.form}>
+            <p style={styles.hint}>
+              Based on the matrix above, pick how many clusters to extract.
+            </p>
+            <div style={styles.row}>
+              <div style={styles.field}>
+                <label style={styles.label}>Clusters (k)</label>
+                <input
+                  type="number"
+                  min={2}
+                  max={50}
+                  value={k}
+                  onChange={e => setK(parseInt(e.target.value) || 8)}
+                  style={{ ...styles.input, width: '80px' }}
+                />
+              </div>
+              <button
+                style={{ ...styles.button, ...(clusterLoading ? styles.buttonDisabled : {}) }}
+                onClick={computeClusters}
+                disabled={clusterLoading}
+              >
+                {clusterLoading
+                  ? 'Clustering...'
+                  : clusters
+                  ? 'Update clusters'
+                  : 'Show clusters'}
+              </button>
+            </div>
+          </div>
+
+          {clusters && <ClusterTable clusters={clusters} />}
         </>
       )}
     </>

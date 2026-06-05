@@ -254,13 +254,26 @@ def build_cluster_data(
     ]
 
 
-def analyze(summary: dict, k: int = 8, linkage_method: str = "ward") -> dict:
-    """Run full analysis pipeline and return results as a dict."""
+def compute_matrix(summary: dict, linkage_method: str = "ward") -> dict:
+    """Build the similarity-matrix view (dendrogram + heatmap).
+
+    Independent of the number of clusters, so users can inspect the natural
+    groupings before choosing k.
+    """
     canonical_labels, similarity = build_similarity_matrix(summary)
-    Z, dendro = run_hca(similarity, method=linkage_method)
+    _Z, dendro = run_hca(similarity, method=linkage_method)
 
     return {
         "dendrogram": build_dendrogram_figure(canonical_labels, dendro),
         "heatmap": build_heatmap_figure(canonical_labels, similarity, dendro),
+    }
+
+
+def compute_clusters(summary: dict, k: int = 8, linkage_method: str = "ward") -> dict:
+    """Extract flat clusters at a chosen k from the same HCA."""
+    canonical_labels, similarity = build_similarity_matrix(summary)
+    Z, _dendro = run_hca(similarity, method=linkage_method)
+
+    return {
         "clusters": build_cluster_data(canonical_labels, Z, n_clusters=k),
     }

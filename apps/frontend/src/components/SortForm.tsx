@@ -221,7 +221,7 @@ export default function SortForm() {
         <div style={{ marginTop: '2rem' }}>
           <h2 style={{ marginBottom: '1rem' }}>Analyze Results</h2>
           <p style={{ color: '#666', marginBottom: '1.5rem' }}>
-            Choose your clustering parameters and run the analysis below.
+            Build the similarity matrix to see the natural groupings, then extract clusters.
           </p>
           <AnalysisPanel source={summary} />
         </div>
