@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import AnalysisPanel from './AnalysisPanel';
 
 const styles = {
   form: {
@@ -213,6 +214,16 @@ export default function SortForm() {
           <button style={styles.downloadBtn} onClick={handleDownload}>
             Download summary.json
           </button>
+        </div>
+      )}
+
+      {summary && (
+        <div style={{ marginTop: '2rem' }}>
+          <h2 style={{ marginBottom: '1rem' }}>Analyze Results</h2>
+          <p style={{ color: '#666', marginBottom: '1.5rem' }}>
+            Choose your clustering parameters and run the analysis below.
+          </p>
+          <AnalysisPanel source={summary} />
         </div>
       )}
     </div>
