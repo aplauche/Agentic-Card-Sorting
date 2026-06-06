@@ -1,12 +1,52 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import AnalysisPanel from './AnalysisPanel';
 
 const styles = {
+  tabBar: {
+    display: 'flex',
+    gap: '0.5rem',
+    marginBottom: '1.5rem',
+  } as React.CSSProperties,
+  tab: {
+    background: 'transparent',
+    border: 'none',
+    borderBottom: '2px solid transparent',
+    padding: '0.6rem 1rem',
+    fontSize: '1rem',
+    fontWeight: 600,
+    color: '#888',
+    cursor: 'pointer',
+  } as React.CSSProperties,
+  tabActive: {
+    color: '#1a1a2e',
+    borderBottom: '2px solid #1a1a2e',
+  } as React.CSSProperties,
   form: {
     background: 'white',
     padding: '2rem',
     borderRadius: '12px',
     boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+  } as React.CSSProperties,
+  field: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '0.4rem',
+  } as React.CSSProperties,
+  label: {
+    fontSize: '0.85rem',
+    fontWeight: 600,
+    color: '#444',
+  } as React.CSSProperties,
+  fileInput: {
+    padding: '0.6rem 0.8rem',
+    border: '1px solid #ddd',
+    borderRadius: '8px',
+    fontSize: '0.95rem',
+  } as React.CSSProperties,
+  fileName: {
+    fontSize: '0.85rem',
+    color: '#666',
+    marginTop: '0.25rem',
   } as React.CSSProperties,
   textarea: {
     width: '100%',
@@ -67,11 +107,19 @@ const styles = {
 };
 
 export default function SortForm() {
+  const [tab, setTab] = useState<'sort' | 'upload'>('sort');
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState({ completed: 0, total: 20 });
   const [summary, setSummary] = useState<object | null>(null);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('tab') === 'upload') {
+      setTab('upload');
+    }
+  }, []);
 
   const parseLabels = (text: string): string[] => {
     // Split by newline first, then by comma, trim and filter empties
@@ -165,6 +213,49 @@ export default function SortForm() {
   const labels = parseLabels(input);
 
   return (
+    <>
+      <div style={styles.tabBar}>
+        <button
+          style={{ ...styles.tab, ...(tab === 'sort' ? styles.tabActive : {}) }}
+          onClick={() => setTab('sort')}
+        >
+          Run a sort
+        </button>
+        <button
+          style={{ ...styles.tab, ...(tab === 'upload' ? styles.tabActive : {}) }}
+          onClick={() => setTab('upload')}
+        >
+          Upload results
+        </button>
+      </div>
+
+      {tab === 'sort' ? (
+        renderSortTab()
+      ) : (
+        <div style={styles.form}>
+          <div style={styles.field}>
+            <label style={styles.label}>Summary JSON</label>
+            <input
+              type="file"
+              accept=".json"
+              style={styles.fileInput}
+              onChange={e => setUploadFile(e.target.files?.[0] ?? null)}
+            />
+            {uploadFile && <div style={styles.fileName}>{uploadFile.name}</div>}
+          </div>
+        </div>
+      )}
+
+      {tab === 'upload' && uploadFile && (
+        <div style={{ marginTop: '2rem' }}>
+          <AnalysisPanel source={uploadFile} />
+        </div>
+      )}
+    </>
+  );
+
+  function renderSortTab() {
+    return (
     <div style={styles.form}>
       <textarea
         style={styles.textarea}
@@ -228,4 +319,5 @@ export default function SortForm() {
       )}
     </div>
   );
+  }
 }
