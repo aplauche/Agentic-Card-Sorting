@@ -13,50 +13,276 @@ const { title } = Astro.props;
     <meta name="viewport" content="width=device-width" />
     <title>{title}</title>
     <style is:global>
+      :root {
+        --bg: #f4f4f1;
+        --panel: #ffffff;
+        --ink: #0a0a0a;
+        --ink-soft: #6a6a66;
+        --line: #0a0a0a;
+        --line-soft: #e2e2dd;
+        --grid: rgba(10, 10, 10, 0.055);
+        --accent: #f4d35e;
+        --accent-edge: #c9a93a;
+        --accent-bg: #fbf1c7;
+        --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Roboto Mono", Menlo, Consolas, monospace;
+        --font-sans: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+      }
+
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
+
+      html {
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
       body {
-        font-family: system-ui, -apple-system, sans-serif;
-        background: #f8f9fa;
-        color: #1a1a2e;
+        font-family: var(--font-sans);
+        color: var(--ink);
         min-height: 100vh;
+        background-color: var(--bg);
+        background-image:
+          linear-gradient(var(--grid) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+        background-size: 32px 32px;
       }
+
+      ::selection {
+        background: var(--ink);
+        color: var(--accent);
+      }
+
+      /* ---- nav ---- */
       nav {
-        background: #1a1a2e;
-        padding: 1rem 2rem;
-        display: flex;
-        gap: 2rem;
-        align-items: center;
-      }
-      nav a {
-        color: #e0e0e0;
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.2s;
-      }
-      nav a:hover, nav a.active {
+        background: var(--ink);
         color: #fff;
+        height: 56px;
+        padding: 0 1.5rem;
+        display: flex;
+        gap: 1.75rem;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 10;
       }
       nav .logo {
         color: #fff;
         font-weight: 700;
-        font-size: 1.1rem;
+        font-size: 0.95rem;
+        letter-spacing: 0.2em;
         margin-right: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        text-decoration: none;
       }
+      nav .logo .spark { color: var(--accent); font-size: 1.1rem; }
+      nav a:not(.logo) {
+        color: rgba(255, 255, 255, 0.65);
+        text-decoration: none;
+        font-family: var(--font-mono);
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        transition: color 0.15s;
+      }
+      nav a:not(.logo):hover,
+      nav a.active { color: #fff; }
+      nav .nav-btn {
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        padding: 0.5rem 1rem;
+        color: #fff;
+        transition: background 0.15s, color 0.15s, border-color 0.15s;
+      }
+      nav .nav-btn:hover {
+        background: #fff;
+        color: var(--ink);
+        border-color: #fff;
+      }
+
       .container {
-        max-width: 1100px;
-        margin: 2rem auto;
-        padding: 0 1.5rem;
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem 5rem;
+      }
+
+      /* ---- typography ---- */
+      h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.04; }
+
+      .eyebrow {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: var(--ink-soft);
+      }
+
+      .section-head { margin: 2.5rem 0 1.25rem; }
+      .section-title { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.01em; }
+      .section-sub {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--ink-soft);
+        margin-top: 0.4rem;
+        line-height: 1.5;
+      }
+
+      /* ---- panels ---- */
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--ink);
+      }
+      .panel + .panel { margin-top: 1.5rem; }
+      .panel-head {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: var(--ink-soft);
+        padding: 0.7rem 1rem;
+        border-bottom: 1px solid var(--ink);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .panel-body { padding: 1.5rem; }
+
+      /* ---- buttons ---- */
+      .btn {
+        font-family: var(--font-mono);
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-weight: 600;
+        padding: 0.7rem 1.5rem;
+        border: 1px solid var(--ink);
+        background: var(--ink);
+        color: #fff;
+        cursor: pointer;
+        transition: background 0.12s, color 0.12s;
+        display: inline-block;
+        text-decoration: none;
+        text-align: center;
+      }
+      .btn:hover:not(:disabled) { background: var(--panel); color: var(--ink); }
+      .btn:disabled { border-color: #c2c2bc; background: #c2c2bc; color: #fff; cursor: not-allowed; }
+      .btn-outline { background: transparent; color: var(--ink); }
+      .btn-outline:hover:not(:disabled) { background: var(--ink); color: #fff; }
+      .btn-accent { background: var(--accent); border-color: var(--ink); color: var(--ink); }
+      .btn-accent:hover:not(:disabled) { background: var(--ink); color: var(--accent); }
+
+      /* ---- form controls ---- */
+      .field-label {
+        display: block;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--ink-soft);
+        margin-bottom: 0.5rem;
+      }
+      .input, .select, .textarea, .file {
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        color: var(--ink);
+        background: var(--panel);
+        border: 1px solid var(--ink);
+        border-radius: 0;
+        padding: 0.65rem 0.75rem;
+        outline: none;
+      }
+      .input:focus, .select:focus, .textarea:focus {
+        box-shadow: inset 0 0 0 2px var(--ink);
+      }
+      .controls-row { display: flex; gap: 1.5rem; align-items: flex-end; flex-wrap: wrap; }
+      .field { display: flex; flex-direction: column; }
+      .textarea { width: 100%; resize: vertical; line-height: 1.6; }
+      .select { background: var(--panel); cursor: pointer; }
+      .file { background: var(--panel); cursor: pointer; }
+      .file::file-selector-button {
+        font-family: var(--font-mono);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 0.68rem;
+        font-weight: 600;
+        border: 1px solid var(--ink);
+        background: var(--ink);
+        color: #fff;
+        padding: 0.4rem 0.9rem;
+        margin-right: 0.9rem;
+        cursor: pointer;
+      }
+
+      /* ---- tabs (segmented) ---- */
+      .tabbar { display: flex; margin-bottom: 1.5rem; }
+      .tab {
+        font-family: var(--font-mono);
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-weight: 600;
+        padding: 0.65rem 1.3rem;
+        border: 1px solid var(--ink);
+        background: var(--panel);
+        color: var(--ink-soft);
+        cursor: pointer;
+        transition: background 0.12s, color 0.12s;
+      }
+      .tab + .tab { border-left: none; }
+      .tab:hover:not(.tab-active) { color: var(--ink); }
+      .tab-active { background: var(--ink); color: #fff; }
+
+      /* ---- status readout + progress ---- */
+      .status {
+        border: 1px solid var(--ink);
+        background: var(--panel);
+        padding: 1rem 1.1rem;
+        margin-top: 1.25rem;
+      }
+      .readout {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink);
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .readout .muted { color: var(--ink-soft); }
+      .bar {
+        height: 8px;
+        background: #e9e9e4;
+        border: 1px solid var(--ink);
+        margin-top: 0.7rem;
+        overflow: hidden;
+      }
+      .bar-fill { height: 100%; background: var(--ink); transition: width 0.3s ease; }
+
+      /* ---- warning / error (amber, telemetry style) ---- */
+      .alert {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        line-height: 1.5;
+        border: 1px solid var(--ink);
+        border-left: 5px solid var(--accent-edge);
+        background: var(--accent-bg);
+        padding: 0.8rem 1rem;
+        margin-top: 1rem;
+        display: flex;
+        gap: 0.6rem;
+        align-items: flex-start;
       }
     </style>
   </head>
   <body>
     <nav>
-      <a href="/" class="logo">Card Sort</a>
+      <a href="/" class="logo"><span class="spark">✦</span> CARD SORT</a>
       <a href="/sort">Sort</a>
+      <a href="/sort" class="nav-btn">Open App</a>
     </nav>
     <div class="container">
       <slot />

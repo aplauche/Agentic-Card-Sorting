@@ -2,69 +2,96 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Card Sort - Open Card Sort with AI Agents">
-  <div class="hero">
-    <h1>Open Card Sort with AI Agents</h1>
-    <p>Run card sorting studies with 20 synthetic participants powered by LLMs, then analyze the results with hierarchical cluster analysis.</p>
+<Layout title="Card Sort — Open Card Sort with AI Agents">
+  <section class="hero">
+    <p class="eyebrow">Synthetic card sorting · Hierarchical cluster analysis</p>
+    <h1 class="hero-title">Sort cards.<br />See the structure.</h1>
+    <p class="hero-sub">
+      Run open card sorts with 20 LLM participants, then analyze the results in
+      real time — similarity matrices, dendrograms, and clusters. No spreadsheets,
+      no manual tallying.
+    </p>
+
     <div class="cards">
-      <a href="/sort" class="card">
-        <h2>Run a Card Sort</h2>
-        <p>Enter your labels and let 20 AI agents sort them into groups. Download the results as JSON for further analysis.</p>
+      <a href="/sort" class="opt panel">
+        <span class="opt-index">01</span>
+        <h2 class="opt-title">Run a card sort</h2>
+        <p class="opt-desc">
+          Enter your labels and let 20 AI agents sort them into groups, then
+          analyze the structure inline.
+        </p>
+        <span class="opt-go">Enter labels →</span>
       </a>
-      <a href="/sort?tab=upload" class="card">
-        <h2>Analyze Results</h2>
-        <p>Upload a previously saved summary.json to generate dendrograms, similarity matrices, and cluster groupings.</p>
+      <a href="/sort?tab=upload" class="opt panel">
+        <span class="opt-index">02</span>
+        <h2 class="opt-title">Analyze results</h2>
+        <p class="opt-desc">
+          Upload a previously saved summary.json to generate dendrograms,
+          similarity matrices, and cluster groupings.
+        </p>
+        <span class="opt-go">Upload JSON →</span>
       </a>
     </div>
-  </div>
+  </section>
 </Layout>
 
 <style>
-  .hero {
-    text-align: center;
-    padding: 4rem 0 2rem;
+  .hero { padding: 2rem 0 0; }
+  .hero-title {
+    font-size: clamp(2.6rem, 7vw, 4.75rem);
+    margin: 1.25rem 0 1.5rem;
   }
-  .hero h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    color: #1a1a2e;
+  .hero-sub {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    max-width: 620px;
   }
-  .hero > p {
-    font-size: 1.15rem;
-    color: #555;
-    max-width: 600px;
-    margin: 0 auto 3rem;
-    line-height: 1.6;
-  }
+
   .cards {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
-    max-width: 700px;
-    margin: 0 auto;
+    margin-top: 3rem;
   }
-  .card {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
+  .opt {
+    display: flex;
+    flex-direction: column;
+    padding: 1.75rem;
     text-decoration: none;
     color: inherit;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    transition: box-shadow 0.2s, transform 0.2s;
-    text-align: left;
+    transition: background 0.15s, color 0.15s;
   }
-  .card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    transform: translateY(-2px);
+  .opt-index {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    color: var(--ink-soft);
+    transition: color 0.15s;
   }
-  .card h2 {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-    color: #1a1a2e;
+  .opt-title { font-size: 1.55rem; margin: 1.25rem 0 0.75rem; }
+  .opt-desc {
+    font-family: var(--font-mono);
+    font-size: 0.84rem;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    flex: 1;
+    transition: color 0.15s;
   }
-  .card p {
-    color: #666;
-    line-height: 1.5;
-    font-size: 0.95rem;
+  .opt-go {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    margin-top: 1.75rem;
+  }
+  .opt:hover { background: var(--ink); color: #fff; }
+  .opt:hover .opt-index,
+  .opt:hover .opt-desc { color: rgba(255, 255, 255, 0.7); }
+
+  @media (max-width: 720px) {
+    .cards { grid-template-columns: 1fr; }
   }
 </style>

@@ -15,11 +15,20 @@ export default function PlotlyChart({ figure, style }: PlotlyChartProps) {
       if (mounted && containerRef.current) {
         Plotly.react(containerRef.current, figure.data, {
           ...figure.layout,
+          title: undefined,
           autosize: true,
           height: Math.max(800, figure.layout?.height ?? 0),
+          paper_bgcolor: 'rgba(0,0,0,0)',
+          plot_bgcolor: 'rgba(0,0,0,0)',
+          font: {
+            family: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
+            size: 11,
+            color: '#0a0a0a',
+          },
+          margin: { ...(figure.layout?.margin ?? {}), t: 10 },
         }, {
           responsive: true,
-          displayModeBar: true,
+          displayModeBar: false,
         });
       }
     });

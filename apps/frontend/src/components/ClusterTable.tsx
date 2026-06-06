@@ -9,57 +9,64 @@ interface ClusterTableProps {
 }
 
 const styles = {
-  container: {
-    background: 'white',
-    borderRadius: '12px',
-    padding: '2rem',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-  } as React.CSSProperties,
   table: {
     width: '100%',
     borderCollapse: 'collapse' as const,
   } as React.CSSProperties,
   th: {
     textAlign: 'left' as const,
-    padding: '0.75rem',
-    borderBottom: '2px solid #1a1a2e',
+    padding: '0.7rem 1rem',
+    borderBottom: '1px solid var(--ink)',
+    fontFamily: 'var(--font-mono)',
+    fontSize: '0.7rem',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.14em',
+    color: 'var(--ink-soft)',
     fontWeight: 600,
   } as React.CSSProperties,
   td: {
-    padding: '0.75rem',
-    borderBottom: '1px solid #eee',
+    padding: '0.85rem 1rem',
+    borderBottom: '1px solid var(--line-soft)',
     verticalAlign: 'top' as const,
   } as React.CSSProperties,
-  clusterName: {
-    fontWeight: 600,
+  clusterId: {
+    fontFamily: 'var(--font-mono)',
+    fontWeight: 700,
+    fontSize: '0.95rem',
     whiteSpace: 'nowrap' as const,
   } as React.CSSProperties,
   size: {
-    color: '#666',
-    fontWeight: 'normal' as const,
-    fontSize: '0.85rem',
+    fontFamily: 'var(--font-mono)',
+    color: 'var(--ink-soft)',
+    fontSize: '0.72rem',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.1em',
+    marginTop: '0.25rem',
   } as React.CSSProperties,
   pill: {
     display: 'inline-block',
-    background: '#f0f4f8',
-    padding: '0.25rem 0.6rem',
-    borderRadius: '4px',
-    fontSize: '0.85rem',
-    margin: '0.15rem',
+    fontFamily: 'var(--font-mono)',
+    border: '1px solid var(--ink)',
+    background: 'var(--panel)',
+    padding: '0.2rem 0.55rem',
+    fontSize: '0.8rem',
+    margin: '0.18rem',
   } as React.CSSProperties,
 };
 
 export default function ClusterTable({ clusters }: ClusterTableProps) {
+  const pad = (n: number) => String(n).padStart(2, '0');
+
   return (
-    <div style={styles.container}>
-      <h2 style={{ marginBottom: '1rem' }}>Cluster Groups</h2>
-      <p style={{ color: '#666', marginBottom: '1.5rem' }}>
-        {clusters.length} clusters identified.
-      </p>
+    <div className="panel" style={{ marginTop: '1.5rem' }}>
+      <div className="panel-head">
+        <span>Cluster Groups</span>
+        <span>{pad(clusters.length)} clusters</span>
+      </div>
       <table style={styles.table}>
         <thead>
           <tr>
-            <th style={{ ...styles.th, width: '120px' }}>Cluster</th>
+            <th style={{ ...styles.th, width: '130px' }}>Cluster</th>
             <th style={styles.th}>Labels</th>
           </tr>
         </thead>
@@ -67,9 +74,7 @@ export default function ClusterTable({ clusters }: ClusterTableProps) {
           {clusters.map((cluster) => (
             <tr key={cluster.cluster_id}>
               <td style={styles.td}>
-                <div style={styles.clusterName}>
-                  Cluster {cluster.cluster_id}
-                </div>
+                <div style={styles.clusterId}>C{pad(cluster.cluster_id)}</div>
                 <div style={styles.size}>{cluster.size} labels</div>
               </td>
               <td style={styles.td}>

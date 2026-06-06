@@ -3,8 +3,11 @@ import Layout from '../layouts/Layout.astro';
 import SortForm from '../components/SortForm.tsx';
 ---
 
-<Layout title="Run Card Sort">
-  <h1 style="margin-bottom: 0.5rem;">Card Sort</h1>
-  <p style="color: #666; margin-bottom: 2rem;">Run a card sort with 20 AI agents, or upload existing results to analyze.</p>
+<Layout title="Card Sort">
+  <p class="eyebrow">Workbench</p>
+  <h1 style="font-size: clamp(2rem, 4vw, 2.75rem); margin: 0.75rem 0 0.6rem;">Card Sort</h1>
+  <p style="font-family: var(--font-mono); color: var(--ink-soft); font-size: 0.88rem; margin-bottom: 2.25rem;">
+    Run a card sort with 20 AI agents, or upload existing results to analyze.
+  </p>
   <SortForm client:load />
 </Layout>
