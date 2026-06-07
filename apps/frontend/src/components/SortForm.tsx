@@ -100,7 +100,7 @@ export default function SortForm() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'summary.json';
+    a.download = 'sorting_data.json';
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -121,7 +121,7 @@ export default function SortForm() {
           className={`tab ${tab === 'upload' ? 'tab-active' : ''}`}
           onClick={() => setTab('upload')}
         >
-          Upload results
+          Upload sorting_data.json File
         </button>
       </div>
 
@@ -129,7 +129,7 @@ export default function SortForm() {
         renderSortTab()
       ) : (
         <div className="panel panel-body">
-          <label className="field-label">Summary JSON</label>
+          <label className="field-label">Previously generated sorting_data.json file</label>
           <input
             type="file"
             accept=".json"
@@ -181,7 +181,7 @@ export default function SortForm() {
         {loading && (
           <div className="status">
             <div className="readout">
-              <span>Sorting</span>
+              <span>Sorting...</span>
               <span className="muted">Agent {pad(progress.completed)} / {pad(progress.total)}</span>
             </div>
             <div className="bar">
@@ -206,7 +206,7 @@ export default function SortForm() {
               </span>
             </div>
             <button className="btn btn-accent" style={{ marginTop: '1rem' }} onClick={handleDownload}>
-              Download summary.json
+              Download sorting_data.json
             </button>
           </div>
         )}

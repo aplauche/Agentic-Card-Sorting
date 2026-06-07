@@ -2,7 +2,9 @@ import json
 
 from fastapi import APIRouter, File, Form, UploadFile
 
+from card_sort_api.models import LabelClustersRequest
 from card_sort_api.services.analysis import compute_matrix, compute_clusters
+from card_sort_api.services.labeling import suggest_cluster_names
 
 router = APIRouter()
 
@@ -30,3 +32,10 @@ async def clusters(
     summary = json.loads(content)
 
     return compute_clusters(summary, k=k, linkage_method=linkage)
+
+
+@router.post("/api/cluster-names")
+async def cluster_names(request: LabelClustersRequest):
+    """Call the LLM one more time to suggest a name for each discovered cluster."""
+    names = await suggest_cluster_names([c.model_dump() for c in request.clusters])
+    return {"names": names}

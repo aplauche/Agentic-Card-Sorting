@@ -1,42 +1,23 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import SortForm from '../components/SortForm.tsx';
 ---
 
 <Layout title="Card Sort — Open Card Sort with AI Agents">
-  <section class="hero">
-    <p class="eyebrow">Synthetic card sorting · Hierarchical cluster analysis</p>
-    <h1 class="hero-title">Sort cards.<br />See the structure.</h1>
-    <p class="hero-sub">
-      Run open card sorts with 20 LLM participants, then analyze the results in
-      real time — similarity matrices, dendrograms, and clusters. No spreadsheets,
-      no manual tallying.
-    </p>
+  <a href="/" class="brand">Agentic Open Card Sorting</a>
 
-    <div class="cards">
-      <a href="/sort" class="opt panel">
-        <span class="opt-index">01</span>
-        <h2 class="opt-title">Run a card sort</h2>
-        <p class="opt-desc">
-          Enter your labels and let 20 AI agents sort them into groups, then
-          analyze the structure inline.
-        </p>
-        <span class="opt-go">Enter labels →</span>
-      </a>
-      <a href="/sort?tab=upload" class="opt panel">
-        <span class="opt-index">02</span>
-        <h2 class="opt-title">Analyze results</h2>
-        <p class="opt-desc">
-          Upload a previously saved summary.json to generate dendrograms,
-          similarity matrices, and cluster groupings.
-        </p>
-        <span class="opt-go">Upload JSON →</span>
-      </a>
-    </div>
+  <section class="hero">
+    <p class="eyebrow">Information architecture · Hierarchical cluster analysis</p>
+    <h1 class="hero-title">Rapid Testing <br />and Iteration.</h1>
+    <p class="hero-sub">Run open card sorts with 20 agentic participants and rapidly generate potential trees for further validation.</p>
   </section>
+
+  <SortForm client:load />
 </Layout>
 
 <style>
-  .hero { padding: 2rem 0 0; }
+  .brand { margin-bottom: 3.5rem; }
+  .hero { padding: 0 0 1rem; margin-bottom: 2.5rem; }
   .hero-title {
     font-size: clamp(2.6rem, 7vw, 4.75rem);
     margin: 1.25rem 0 1.5rem;
@@ -47,51 +28,5 @@ import Layout from '../layouts/Layout.astro';
     line-height: 1.7;
     color: var(--ink-soft);
     max-width: 620px;
-  }
-
-  .cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-top: 3rem;
-  }
-  .opt {
-    display: flex;
-    flex-direction: column;
-    padding: 1.75rem;
-    text-decoration: none;
-    color: inherit;
-    transition: background 0.15s, color 0.15s;
-  }
-  .opt-index {
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.16em;
-    color: var(--ink-soft);
-    transition: color 0.15s;
-  }
-  .opt-title { font-size: 1.55rem; margin: 1.25rem 0 0.75rem; }
-  .opt-desc {
-    font-family: var(--font-mono);
-    font-size: 0.84rem;
-    line-height: 1.65;
-    color: var(--ink-soft);
-    flex: 1;
-    transition: color 0.15s;
-  }
-  .opt-go {
-    font-family: var(--font-mono);
-    font-size: 0.76rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    font-weight: 600;
-    margin-top: 1.75rem;
-  }
-  .opt:hover { background: var(--ink); color: #fff; }
-  .opt:hover .opt-index,
-  .opt:hover .opt-desc { color: rgba(255, 255, 255, 0.7); }
-
-  @media (max-width: 720px) {
-    .cards { grid-template-columns: 1fr; }
   }
 </style>

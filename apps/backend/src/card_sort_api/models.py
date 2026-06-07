@@ -26,3 +26,18 @@ class AnalyzeResponse(BaseModel):
     dendrogram: dict
     heatmap: dict
     clusters: list[ClusterInfo]
+
+
+class ClusterLabel(BaseModel):
+    """A suggested name for one discovered cluster."""
+    cluster_id: int = Field(description="The id of the cluster being named")
+    name: str = Field(description="A short, descriptive category name (2-4 words) for this cluster")
+
+
+class ClusterLabels(BaseModel):
+    """LLM-suggested names for all discovered clusters."""
+    labels: list[ClusterLabel] = Field(description="One name per cluster")
+
+
+class LabelClustersRequest(BaseModel):
+    clusters: list[ClusterInfo]
