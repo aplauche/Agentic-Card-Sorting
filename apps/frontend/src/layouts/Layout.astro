@@ -21,9 +21,9 @@ const { title } = Astro.props;
         --line: #0a0a0a;
         --line-soft: #e2e2dd;
         --grid: rgba(10, 10, 10, 0.055);
-        --accent: #f4d35e;
-        --accent-edge: #c9a93a;
-        --accent-bg: #fbf1c7;
+        --accent: #71b6ff;
+        --accent-edge: #2fa5ff;
+        --accent-bg: #9bd4ff;
         --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Roboto Mono", Menlo, Consolas, monospace;
         --font-sans: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
       }
@@ -138,7 +138,7 @@ const { title } = Astro.props;
       .btn-outline { background: transparent; color: var(--ink); }
       .btn-outline:hover:not(:disabled) { background: var(--ink); color: #fff; }
       .btn-accent { background: var(--accent); border-color: var(--ink); color: var(--ink); }
-      .btn-accent:hover:not(:disabled) { background: var(--ink); color: var(--accent); }
+      .btn-accent:hover:not(:disabled) { background: var(--accent-bg); }
 
       /* ---- form controls ---- */
       .field-label {

@@ -127,6 +127,9 @@ export default function ClusterTable({ clusters, names }: ClusterTableProps) {
         <button className="btn btn-accent" onClick={handleDownload}>
           Download clusters.json
         </button>
+        <p className="section-sub" style={{ margin: '1rem 0 1.25rem' }}>
+          <strong>NOTE:</strong> All results should be validated by tree-testing with <strong>REAL</strong> participants.
+        </p>
       </div>
     </div>
   );
