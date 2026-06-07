@@ -55,59 +55,25 @@ const { title } = Astro.props;
         color: var(--accent);
       }
 
-      /* ---- nav ---- */
-      nav {
-        background: var(--ink);
-        color: #fff;
-        height: 56px;
-        padding: 0 1.5rem;
-        display: flex;
-        gap: 1.75rem;
-        align-items: center;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-      }
-      nav .logo {
-        color: #fff;
-        font-weight: 700;
-        font-size: 0.95rem;
-        letter-spacing: 0.2em;
-        margin-right: auto;
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        text-decoration: none;
-      }
-      nav .logo .spark { color: var(--accent); font-size: 1.1rem; }
-      nav a:not(.logo) {
-        color: rgba(255, 255, 255, 0.65);
-        text-decoration: none;
-        font-family: var(--font-mono);
-        font-size: 0.74rem;
-        text-transform: uppercase;
-        letter-spacing: 0.14em;
-        transition: color 0.15s;
-      }
-      nav a:not(.logo):hover,
-      nav a.active { color: #fff; }
-      nav .nav-btn {
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        padding: 0.5rem 1rem;
-        color: #fff;
-        transition: background 0.15s, color 0.15s, border-color 0.15s;
-      }
-      nav .nav-btn:hover {
-        background: #fff;
-        color: var(--ink);
-        border-color: #fff;
-      }
-
       .container {
         max-width: 1180px;
         margin: 0 auto;
-        padding: 3rem 1.5rem 5rem;
+        padding: 2.5rem 1.5rem 5rem;
       }
+
+      /* ---- brand mark ---- */
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink);
+        text-decoration: none;
+      }
+      .brand .spark { color: var(--accent-edge); font-size: 1.1rem; }
 
       /* ---- typography ---- */
       h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.04; }
@@ -279,11 +245,6 @@ const { title } = Astro.props;
     </style>
   </head>
   <body>
-    <nav>
-      <a href="/" class="logo"><span class="spark">✦</span> CARD SORT</a>
-      <a href="/sort">Sort</a>
-      <a href="/sort" class="nav-btn">Open App</a>
-    </nav>
     <div class="container">
       <slot />
     </div>
