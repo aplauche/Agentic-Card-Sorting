@@ -63,6 +63,25 @@ const styles = {
 export default function ClusterTable({ clusters, names }: ClusterTableProps) {
   const pad = (n: number) => String(n).padStart(2, '0');
 
+  const handleDownload = () => {
+    const payload = clusters.map((cluster) => {
+      const name = names?.[cluster.cluster_id];
+      return {
+        cluster_id: cluster.cluster_id,
+        size: cluster.size,
+        ...(name ? { generatedName: name } : {}),
+        labels: cluster.labels,
+      };
+    });
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'clusters.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="panel" style={{ marginTop: '1.5rem' }}>
       <div className="panel-head">
@@ -104,6 +123,11 @@ export default function ClusterTable({ clusters, names }: ClusterTableProps) {
           })}
         </tbody>
       </table>
+      <div style={{ padding: '1.25rem', borderTop: '1px solid var(--ink)' }}>
+        <button className="btn btn-accent" onClick={handleDownload}>
+          Download clusters.json
+        </button>
+      </div>
     </div>
   );
 }
