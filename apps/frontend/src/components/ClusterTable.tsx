@@ -6,6 +6,7 @@ interface Cluster {
 
 interface ClusterTableProps {
   clusters: Cluster[];
+  names?: Record<number, string> | null;
 }
 
 const styles = {
@@ -35,6 +36,11 @@ const styles = {
     fontSize: '0.95rem',
     whiteSpace: 'nowrap' as const,
   } as React.CSSProperties,
+  clusterName: {
+    fontWeight: 700,
+    fontSize: '1rem',
+    letterSpacing: '-0.01em',
+  } as React.CSSProperties,
   size: {
     fontFamily: 'var(--font-mono)',
     color: 'var(--ink-soft)',
@@ -54,7 +60,7 @@ const styles = {
   } as React.CSSProperties,
 };
 
-export default function ClusterTable({ clusters }: ClusterTableProps) {
+export default function ClusterTable({ clusters, names }: ClusterTableProps) {
   const pad = (n: number) => String(n).padStart(2, '0');
 
   return (
@@ -71,11 +77,22 @@ export default function ClusterTable({ clusters }: ClusterTableProps) {
           </tr>
         </thead>
         <tbody>
-          {clusters.map((cluster) => (
+          {clusters.map((cluster) => {
+            const name = names?.[cluster.cluster_id];
+            return (
             <tr key={cluster.cluster_id}>
               <td style={styles.td}>
-                <div style={styles.clusterId}>C{pad(cluster.cluster_id)}</div>
-                <div style={styles.size}>{cluster.size} labels</div>
+                {name ? (
+                  <>
+                    <div style={styles.clusterName}>{name}</div>
+                    <div style={styles.size}>C{pad(cluster.cluster_id)} · {cluster.size} labels</div>
+                  </>
+                ) : (
+                  <>
+                    <div style={styles.clusterId}>C{pad(cluster.cluster_id)}</div>
+                    <div style={styles.size}>{cluster.size} labels</div>
+                  </>
+                )}
               </td>
               <td style={styles.td}>
                 {cluster.labels.map((label, i) => (
@@ -83,7 +100,8 @@ export default function ClusterTable({ clusters }: ClusterTableProps) {
                 ))}
               </td>
             </tr>
-          ))}
+            );
+          })}
         </tbody>
       </table>
     </div>

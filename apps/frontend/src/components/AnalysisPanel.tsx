@@ -19,8 +19,10 @@ export default function AnalysisPanel({ source }: AnalysisPanelProps) {
   const [k, setK] = useState(8);
   const [matrix, setMatrix] = useState<MatrixResult | null>(null);
   const [clusters, setClusters] = useState<Cluster[] | null>(null);
+  const [names, setNames] = useState<Record<number, string> | null>(null);
   const [matrixLoading, setMatrixLoading] = useState(false);
   const [clusterLoading, setClusterLoading] = useState(false);
+  const [namesLoading, setNamesLoading] = useState(false);
   const [error, setError] = useState('');
 
   const sourceAsFile = useCallback((): File => {
@@ -52,8 +54,9 @@ export default function AnalysisPanel({ source }: AnalysisPanelProps) {
       }
 
       setMatrix(await response.json());
-      // The linkage may have changed, so any prior clusters are now stale.
+      // The linkage may have changed, so any prior clusters/names are now stale.
       setClusters(null);
+      setNames(null);
     } catch (e: any) {
       setError(e.message || 'An error occurred');
     } finally {
@@ -85,12 +88,45 @@ export default function AnalysisPanel({ source }: AnalysisPanelProps) {
 
       const data = await response.json();
       setClusters(data.clusters);
+      // New clusters invalidate any previously suggested names.
+      setNames(null);
     } catch (e: any) {
       setError(e.message || 'An error occurred');
     } finally {
       setClusterLoading(false);
     }
   }, [source, k, linkage, sourceAsFile]);
+
+  const suggestNames = useCallback(async () => {
+    if (!clusters) return;
+
+    setNamesLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/cluster-names', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clusters }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Server error: ${response.status} - ${text}`);
+      }
+
+      const data = await response.json();
+      const map: Record<number, string> = {};
+      for (const item of data.names) {
+        map[item.cluster_id] = item.name;
+      }
+      setNames(map);
+    } catch (e: any) {
+      setError(e.message || 'An error occurred');
+    } finally {
+      setNamesLoading(false);
+    }
+  }, [clusters]);
 
   return (
     <>
@@ -165,7 +201,19 @@ export default function AnalysisPanel({ source }: AnalysisPanelProps) {
             </div>
           </div>
 
-          {clusters && <ClusterTable clusters={clusters} />}
+          {clusters && (
+            <>
+              <div className="panel panel-body" style={{ marginTop: '1.5rem' }}>
+                <p className="section-sub" style={{ margin: '0 0 1.25rem' }}>
+                  Generate a descriptive name for each cluster with one more LLM pass.
+                </p>
+                <button className="btn" onClick={suggestNames} disabled={namesLoading}>
+                  {namesLoading ? 'Naming…' : names ? 'Regenerate names' : 'Suggest cluster names'}
+                </button>
+              </div>
+              <ClusterTable clusters={clusters} names={names} />
+            </>
+          )}
         </>
       )}
     </>
